@@ -81,3 +81,23 @@ CREATE TABLE OrderItems (
         REFERENCES Products(ProductId)
 );
 GO
+
+-- RefreshTokens: tracks active refresh tokens (hashed) for sessions
+CREATE TABLE RefreshTokens (
+    Id INT IDENTITY(1,1) PRIMARY KEY,
+    UserId INT NOT NULL,
+    TokenHash NVARCHAR(255) NOT NULL UNIQUE,
+    ExpiresAt DATETIME2 NOT NULL,
+    RevokedAt DATETIME2 NULL,
+    CreatedAt DATETIME2 NOT NULL DEFAULT GETDATE(),
+    CONSTRAINT FK_RefreshTokens_Users FOREIGN KEY (UserId)
+        REFERENCES Users(UserId)
+        ON DELETE CASCADE
+);
+GO
+
+CREATE INDEX IX_RefreshTokens_TokenHash ON RefreshTokens(TokenHash);
+GO
+
+CREATE INDEX IX_RefreshTokens_UserId ON RefreshTokens(UserId);
+GO
